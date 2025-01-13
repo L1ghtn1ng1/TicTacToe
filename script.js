@@ -6,7 +6,6 @@ function GameBoard() {
           board[i].push(null);
         }
     }
-    console.log(board);
     const getBoard = () => board;
     const setBoard = (row, col, player) => {
       if (board[row][col] === null) {
@@ -30,6 +29,8 @@ function Player(name, mark) {
 }
 
 function Game() {
+  var p1Score = 0
+  var p2Score = 0
   let board = GameBoard();
   const player1 = new Player('Player 1', 'X');
   const player2 = new Player('Player 2', 'O');
@@ -47,6 +48,9 @@ function Game() {
     }
   }
   const getBoard = () => board.getBoard();
+  const getScore = () => {
+    return {p1Score, p2Score};
+  }
   const checkWinner = () => {
     //handle for tie
     let tie = true;
@@ -70,6 +74,12 @@ function Game() {
     }
     if(winner){
       alert(`${winner} wins!`);
+      if(winner === 'X'){
+        p1Score ++;
+      }
+      else{
+        p2Score ++;
+      }
       return true;
     }
     for (let i = 0; i < 3; i++) {
@@ -84,18 +94,29 @@ function Game() {
         return true;
     }
   };
-  return { getCurrentPlayer, play, getBoard, resetBoard, checkWinner };
+  return { getCurrentPlayer, play, getBoard, resetBoard, checkWinner, getScore };
 }
 
 
 function ScreenController(){
-    const game = Game();
+    let game = Game();
+    const player1Score = document.querySelector('.player1-score');
+    const player2Score = document.querySelector('.player2-score');
     const playerTurn = document.querySelector('.turn');
     const boardDisplay = document.querySelector('.board');
-    const updateScreen = () => {  
+    const restartBtn = document.querySelector('.restart');
+    restartBtn.addEventListener('click', () => {
+        game.resetBoard();
+        game = Game();
+        updateScreen();
+    });
+    const updateScreen = () => {
         playerTurn.textContent = `${game.getCurrentPlayer().getName()}'s turn`;
         const board = game.getBoard();
         boardDisplay.innerHTML = '';
+        const {p1Score, p2Score} = game.getScore();
+        player1Score.innerHTML = p1Score;
+        player2Score.innerHTML = p2Score;
         for (let i = 0; i < 3; i++) {
             const row = document.createElement('div');
             row.classList.add('row');
